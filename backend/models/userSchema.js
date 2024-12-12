@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema({
 
   portfolioURL: {
     type: String,
-    required: true,
+    // required: true,
   },
   githubURL: String,
   linkedinURL: String,
