@@ -1,0 +1,12 @@
+{
+    "editor.acceptSuggestionOnCommitCharacter": true,
+    "html-css-class-completion.JavaScriptLanguages": [
+
+        "javascript",
+        "javascriptreact",
+        "typescriptreact"
+    ],
+    "javascript.validate.enable": true,
+    "javascript.suggestionActions.enabled": true,
+    "eslint.enable": false
+}

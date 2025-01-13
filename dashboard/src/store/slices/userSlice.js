@@ -40,6 +40,7 @@ const userSlice = createSlice({
       state.loading = false;
       state.isAuthenticated = true;
       state.user = action.payload;
+      // console.log(action.payload);//payload console
       state.error = null;
     },
     loadUserFailed(state, action) {
@@ -96,7 +97,7 @@ const userSlice = createSlice({
       state.message = null;
       state.error = action.payload;
     },
-    updateProfileResetAfterUpdate() {
+    updateProfileResetAfterUpdate(state) {
       state.error = null;
       state.isUpdated = false;
       state.message = null;
@@ -129,10 +130,24 @@ export const getUser = () => async (dispatch) => {
     const { data } = await axios.get("http://localhost:5000/api/v1/user/me", {
       withCredentials: true,
     });
-    dispatch(userSlice.actions.loadUserSuccess(data.user));
-    dispatch(userSlice.actions.clearAllErrors());
+    // console.log("API Response: ", data); // Log the entire API response
+
+    if (data && data.user) {
+      dispatch(userSlice.actions.loadUserSuccess(data.user));
+    } else {
+      // console.error("No user data received:", data);
+      dispatch(userSlice.actions.loadUserFailed("No user data"));
+    }
   } catch (error) {
-    dispatch(userSlice.actions.loadUserFailed(error.response.data.message));
+    console.error(
+      "Error fetching user data:",
+      error?.response?.data?.message || error.message
+    );
+    dispatch(
+      userSlice.actions.loadUserFailed(
+        error?.response?.data?.message || "Unknown error"
+      )
+    );
   }
 };
 
@@ -170,11 +185,10 @@ export const updatePassword =
     }
   };
 
-  export const updateProfile =
-  (data) => async (dispatch) => {
+  export const updateProfile = (data) => async (dispatch) => {
     dispatch(userSlice.actions.updateProfileRequest());
     try {
-      const { data } = await axios.put(
+      const response = await axios.put(
         "http://localhost:5000/api/v1/user/update/me",
         data,
         {
@@ -182,19 +196,18 @@ export const updatePassword =
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      dispatch(userSlice.actions.updatePasswordSuccess(data.message));
+      dispatch(userSlice.actions.updateProfileSuccess(response.data.message));
       dispatch(userSlice.actions.clearAllErrors());
     } catch (error) {
       dispatch(
-        userSlice.actions.updatePasswordFailed(error.response.data.message)
+        userSlice.actions.updateProfileFailed(error.response.data.message)
       );
     }
   };
 
-  export const resetProfile = () => (dispatch) => {
-    dispatch(userSlice.actions.updateProfileResetAfterUpdate());
-  }
-
+export const resetProfile = () => (dispatch) => {
+  dispatch(userSlice.actions.updateProfileResetAfterUpdate());
+};
 
 export const clearAllUserErrors = () => (dispatch) => {
   dispatch(userSlice.actions.clearAllErrors());

@@ -152,7 +152,7 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
       resume.tempFilePath,
       { folder: "MY_RESUME" }
     );
-    newUserdata.avater = {
+    newUserdata.resume = {
       public_id: cloudinaryRespons.public_id,
       url: cloudinaryRespons.secure_url,
     };
